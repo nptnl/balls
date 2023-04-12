@@ -1,5 +1,7 @@
+import pygame
 EULER_STEP = 1.0
 BIG_G = 6.674e-1
+FPS = 60
 
 class vec:
     def __init__(self, x, y):
@@ -8,7 +10,7 @@ class vec:
     def __repr__(self):
         return f"({self.x}, {self.y})"
     def __neg__(self):
-        return vec(-self.x, -self.y11)
+        return vec(-self.x, -self.y)
     def __add__(s1, s2):
         return vec(s1.x + s2.x, s1.y + s2.y)
     def __sub__(s1, s2):
@@ -22,10 +24,11 @@ def sqrt(x):
         t2 -= 0.5*(t2*t2 - x) / t2
     return t2
 class object:
-    def __init__(self, pos, vel, mass):
+    def __init__(self, pos, vel, mass, radius):
         self.pos = pos
         self.vel = vel
         self.mass = mass
+        self.r = radius
     def __repr__(self):
         return f"[position = {self.pos}]"
     def gravity_affect(self, other):
@@ -38,8 +41,20 @@ class frame:
     def __init__(self, objects_list, time):
         self.obj = objects_list
         self.time = time
-#   def __repr__(self):
-#       call the display functions here
+    def display(self):
+        active = True
+        clock = pygame.time.Clock()
+        window = pygame.display.set_mode((600, 600))
+        while active:
+            clock.tick(FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    active = False
+            window.fill((255, 255, 255))
+            for obj in self.obj:
+                pygame.draw.circle(window, (0, 0, 0), (obj.pos.x, obj.pos.y), obj.r, 0)
+            pygame.display.update()
+            self.advance()
     def advance(self):
         new_obj = []
         for ent1 in self.obj:
@@ -63,10 +78,11 @@ class frame:
 # use this template
 setframe = frame(
 #              position        velocity   mass
-    [object(vec(-1.0,-1.0), vec(0.0,0.0), 1.0),
-    object(vec(-1.0,-1.0), vec(0.0,0.0), 1.0)],
+    [object(vec(-1.0,-1.0), vec(0.0,0.0), 1.0, 10),
+    object(vec(-1.0,-1.0), vec(0.0,0.0), 1.0, 10)],
     0.0
 )
 
 # use frame.advance() to go to the next frame
-# this is according to the EULER_STEP and BIG_G constants at the top
+# this is according to the EULER_STEP and BIG_G constants at the top  
+setframe.display()
