@@ -1,5 +1,5 @@
 import pygame
-EULER_STEP = 1.0
+EULER_STEP = 1
 BIG_G = 6.674e-1
 FPS = 60
 
@@ -54,7 +54,7 @@ class frame:
             for obj in self.obj:
                 pygame.draw.circle(window, (0, 0, 0), (obj.pos.x, obj.pos.y), obj.r, 0)
             pygame.display.update()
-            self.advance()
+            self = self.advance()
     def advance(self):
         new_obj = []
         for ent1 in self.obj:
@@ -71,15 +71,15 @@ class frame:
                 ent1.pos.x + vel.x * EULER_STEP,
                 ent1.pos.y + vel.y * EULER_STEP
             )
-            new_obj.append(object(pos, vel, ent1.mass))
+            new_obj.append(object(pos, vel, ent1.mass, ent1.r))
         return frame(new_obj, self.time + EULER_STEP)
 
 # frames are a list of objects and a time float
 # use this template
 setframe = frame(
 #              position        velocity   mass
-    [object(vec(-1.0,-1.0), vec(0.0,0.0), 1.0, 10),
-    object(vec(-1.0,-1.0), vec(0.0,0.0), 1.0, 10)],
+    [object(vec(50, 50), vec(0,0.0), 100.0, 20),
+    object(vec(10, 10), vec(0,0.0), 100.0, 20)],
     0.0
 )
 
