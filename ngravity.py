@@ -54,7 +54,10 @@ class frame:
             for obj in self.obj:
                 pygame.draw.circle(window, (0, 0, 0), (obj.pos.x, obj.pos.y), obj.r, 0)
             pygame.display.update()
-            self = self.advance()
+            iterations = 0
+            while iterations <= 4: # change for multiple steps per frame
+                self = self.advance()
+                iterations += 1
     def advance(self):
         new_obj = []
         for ent1 in self.obj:
@@ -74,15 +77,9 @@ class frame:
             new_obj.append(object(pos, vel, ent1.mass, ent1.r))
         return frame(new_obj, self.time + EULER_STEP)
 
-# frames are a list of objects and a time float
-# use this template
 setframe = frame(
-#              position        velocity   mass
     [object(vec(50, 50), vec(0,0.0), 100.0, 20),
     object(vec(10, 10), vec(0,0.0), 100.0, 20)],
     0.0
 )
-
-# use frame.advance() to go to the next frame
-# this is according to the EULER_STEP and BIG_G constants at the top  
 setframe.display()
