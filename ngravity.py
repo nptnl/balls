@@ -50,9 +50,9 @@ class frame:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     active = False
-            window.fill((255, 255, 255))
+            window.fill((60, 60, 60))
             for obj in self.obj:
-                pygame.draw.circle(window, (0, 0, 0), (obj.pos.x, obj.pos.y), obj.r, 0)
+                pygame.draw.circle(window, (200, 200, 200), (obj.pos.x, obj.pos.y), obj.r, 0)
             pygame.display.update()
             iterations = 0
             while iterations <= 4: # change for multiple steps per frame
