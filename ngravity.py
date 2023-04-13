@@ -1,7 +1,29 @@
 import pygame
 EULER_STEP = 1
-BIG_G = 6.674e-1
+BIG_G = 6.674e-1 * 3
+π = 3.1415926535
 FPS = 60
+
+def sqrt(x):
+    t1, t2 = 2.0, 1.0
+    while abs(t2 - t1) > 0.0001:
+        t1 = t2
+        t2 -= 0.5*(t2*t2 - x) / t2
+    return t2
+def cos(x):
+    running = 1.0
+    total = 0.0
+    for term in range(1,8):
+        total += running
+        running *= -x*x  / (2*term) / (2*term-1)
+    return total
+def sin(x):
+    running = x
+    total = 0.0
+    for term in range(1,8):
+        total += running
+        running *= -x*x / (2*term) / (2*term+1)
+    return total
 
 class vec:
     def __init__(self, x, y):
@@ -17,12 +39,6 @@ class vec:
         return vec(s1.x - s2.x, s1.y - s2.y)
     def mag_square(self):
         return self.x*self.x + self.y*self.y
-def sqrt(x):
-    t1, t2 = 2.0, 1.0
-    while abs(t2 - t1) > 0.0001:
-        t1 = t2
-        t2 -= 0.5*(t2*t2 - x) / t2
-    return t2
 class object:
     def __init__(self, pos, vel, mass, radius):
         self.pos = pos
@@ -52,6 +68,7 @@ class frame:
                     active = False
             window.fill((60, 60, 60))
             for obj in self.obj:
+                # get this to draw polar graphs :)
                 pygame.draw.circle(window, (200, 200, 200), (obj.pos.x, obj.pos.y), obj.r, 0)
             pygame.display.update()
             iterations = 0
@@ -78,8 +95,14 @@ class frame:
         return frame(new_obj, self.time + EULER_STEP)
 
 setframe = frame(
-    [object(vec(50, 50), vec(0,0.0), 100.0, 20),
-    object(vec(10, 10), vec(0,0.0), 100.0, 20)],
+    [object(vec(300, 200), vec(0.2, 0), 80.0, 20),
+    object(vec(100, 300), vec(0.5, 0), 40.0, 20),
+    object(vec(300, 500), vec(-0.2,0), 50.0, 20)],
     0.0
 )
-setframe.display()
+# setframe.display()
+
+# r = self.r - k*cos(t - a) = self.r - k*(cos(t)*cos(a) - sin(t)*sin(a))
+# k = self.r * (self.r + other.r) / dist.mag
+# F = m * v * self.r / (self.r - k)
+# cos(a) = dist.x / dist.mag, sin(a) = dist.y / dist.mag
