@@ -1,0 +1,7 @@
+setframe = frame(
+    [object(vec(300, 200), vec(0.2, 0), 80.0, 20),
+    object(vec(100, 300), vec(0.5, 0), 40.0, 20),
+    object(vec(300, 500), vec(-0.2,0), 50.0, 20)],
+    0.0
+)
+

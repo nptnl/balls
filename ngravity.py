@@ -3,6 +3,11 @@ EULER_STEP = 1
 BIG_G = 6.674e-1 * 3
 π = 3.1415926535
 FPS = 60
+STEPSPERFRAME = 4
+minX = 0
+maxX = 1200
+minY = 0
+maxY = 700
 
 def sqrt(x):
     t1, t2 = 2.0, 1.0
@@ -53,6 +58,11 @@ class object:
         inv_dist_mag = 1 / sqrt(dist.mag_square())
         return vec(force_mag * dist.x * inv_dist_mag,
         force_mag * dist.y * inv_dist_mag)
+    def check_border(self):
+        if self.pos.x + self.r >= maxX or self.pos.x - self.r <= minX:
+            self.vel.x = -self.vel.x
+        if self.pos.y + self.r >= maxY or self.pos.y - self.r <= minY:
+            self.vel.y = -self.vel.y
 class frame:
     def __init__(self, objects_list, time):
         self.obj = objects_list
@@ -60,7 +70,7 @@ class frame:
     def display(self):
         active = True
         clock = pygame.time.Clock()
-        window = pygame.display.set_mode((600, 600))
+        window = pygame.display.set_mode((1200, 700))
         while active:
             clock.tick(FPS)
             for event in pygame.event.get():
@@ -68,13 +78,11 @@ class frame:
                     active = False
             window.fill((60, 60, 60))
             for obj in self.obj:
-                # get this to draw polar graphs :)
+                obj.check_border()
                 pygame.draw.circle(window, (200, 200, 200), (obj.pos.x, obj.pos.y), obj.r, 0)
             pygame.display.update()
-            iterations = 0
-            while iterations <= 4: # change for multiple steps per frame
+            for iteration in range(STEPSPERFRAME):
                 self = self.advance()
-                iterations += 1
     def advance(self):
         new_obj = []
         for ent1 in self.obj:
@@ -100,7 +108,7 @@ setframe = frame(
     object(vec(300, 500), vec(-0.2,0), 50.0, 20)],
     0.0
 )
-# setframe.display()
+setframe.display()
 
 # r = self.r - k*cos(t - a) = self.r - k*(cos(t)*cos(a) - sin(t)*sin(a))
 # k = self.r * (self.r + other.r) / dist.mag
