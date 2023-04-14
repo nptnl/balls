@@ -1,6 +1,6 @@
 import pygame
 EULER_STEP = 1
-BIG_G = 6.674e-1
+BIG_G = 6.674e0
 DENSITY = 5e1
 π = 3.1415926535
 FPS = 60
@@ -9,7 +9,7 @@ STEPS_FRAME = 4
 minX = 0
 maxX = 1200
 minY = 0
-maxY = 700
+maxY = 600
 
 def sqrt(x):
     t1, t2 = 2.0, 1.0
@@ -72,7 +72,6 @@ class object:
         if dist.mag_square() > (self.r+other.r) * (self.r+other.r):
             return vec(0.0, 0.0)
         inv_mag = 1 / dist.mag()
-        vel_diff = other.vel - self.vel
         return vec(
             DENSITY * other.mass * dist.x * (inv_mag ** 2),
             DENSITY * other.mass * dist.y * (inv_mag ** 2)
@@ -120,7 +119,7 @@ class frame:
 
 setframe = frame(
     [object(vec(300, 200), vec(0.1, 0), 50.0, 20),
-    object(vec(300, 300), vec(0.1,0), 50.0, 20)],
+    object(vec(300, 500), vec(-0.1,0.4), 50.0, 20)],
     0.0
 )
 setframe.display()
