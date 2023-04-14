@@ -1,9 +1,11 @@
 import pygame
 EULER_STEP = 1
-BIG_G = 6.674e-1 * 3
+BIG_G = 6.674e-1
+DENSITY = 5e1
 π = 3.1415926535
 FPS = 60
-STEPSPERFRAME = 4
+STEPS_FRAME = 4
+
 minX = 0
 maxX = 1200
 minY = 0
@@ -44,6 +46,8 @@ class vec:
         return vec(s1.x - s2.x, s1.y - s2.y)
     def mag_square(self):
         return self.x*self.x + self.y*self.y
+    def mag(self):
+        return sqrt(self.x*self.x + self.y*self.y)
 class object:
     def __init__(self, pos, vel, mass, radius):
         self.pos = pos
@@ -55,7 +59,7 @@ class object:
     def gravity_affect(self, other):
         dist = other.pos - self.pos
         force_mag = BIG_G * self.mass * other.mass / dist.mag_square()
-        inv_dist_mag = 1 / sqrt(dist.mag_square())
+        inv_dist_mag = 1 / dist.mag()
         return vec(force_mag * dist.x * inv_dist_mag,
         force_mag * dist.y * inv_dist_mag)
     def check_border(self):
@@ -63,6 +67,17 @@ class object:
             self.vel.x = -self.vel.x
         if self.pos.y + self.r >= maxY or self.pos.y - self.r <= minY:
             self.vel.y = -self.vel.y
+    def collision_affect(self, other):
+        dist = self.pos - other.pos
+        if dist.mag_square() > (self.r+other.r) * (self.r+other.r):
+            return vec(0.0, 0.0)
+        inv_mag = 1 / dist.mag()
+        vel_diff = other.vel - self.vel
+        return vec(
+            DENSITY * other.mass * dist.x * (inv_mag ** 2),
+            DENSITY * other.mass * dist.y * (inv_mag ** 2)
+        )
+    
 class frame:
     def __init__(self, objects_list, time):
         self.obj = objects_list
@@ -70,7 +85,7 @@ class frame:
     def display(self):
         active = True
         clock = pygame.time.Clock()
-        window = pygame.display.set_mode((1200, 700))
+        window = pygame.display.set_mode((1200, 600))
         while active:
             clock.tick(FPS)
             for event in pygame.event.get():
@@ -81,7 +96,7 @@ class frame:
                 obj.check_border()
                 pygame.draw.circle(window, (200, 200, 200), (obj.pos.x, obj.pos.y), obj.r, 0)
             pygame.display.update()
-            for iteration in range(STEPSPERFRAME):
+            for iteration in range(STEPS_FRAME):
                 self = self.advance()
     def advance(self):
         new_obj = []
@@ -90,6 +105,7 @@ class frame:
             for ent2 in self.obj:
                 if ent2.pos == ent1.pos:
                     continue
+                netforce += ent1.collision_affect(ent2)
                 netforce += ent1.gravity_affect(ent2)
             vel = vec(
                 ent1.vel.x + netforce.x / ent1.mass * EULER_STEP,
@@ -103,14 +119,8 @@ class frame:
         return frame(new_obj, self.time + EULER_STEP)
 
 setframe = frame(
-    [object(vec(300, 200), vec(0.2, 0), 80.0, 20),
-    object(vec(100, 300), vec(0.5, 0), 40.0, 20),
-    object(vec(300, 500), vec(-0.2,0), 50.0, 20)],
+    [object(vec(300, 200), vec(0.1, 0), 50.0, 20),
+    object(vec(300, 300), vec(0.1,0), 50.0, 20)],
     0.0
 )
 setframe.display()
-
-# r = self.r - k*cos(t - a) = self.r - k*(cos(t)*cos(a) - sin(t)*sin(a))
-# k = self.r * (self.r + other.r) / dist.mag
-# F = m * v * self.r / (self.r - k)
-# cos(a) = dist.x / dist.mag, sin(a) = dist.y / dist.mag
