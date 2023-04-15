@@ -1,10 +1,10 @@
 import pygame
-EULER_STEP = 1
+EULER_STEP = 0.5
 BIG_G = 6.674e0
 PUSH_CONSTANT = 5e-1
 π = 3.1415926535
 FPS = 60
-STEPS_FRAME = 4
+STEPS_FRAME = 8
 
 minX = 0
 maxX = 1200
@@ -119,7 +119,8 @@ class frame:
 
 setframe = frame(
     [object(vec(300, 200), vec(0.1, 0), 20, 20),
-    object(vec(300, 500), vec(-0.1,0.4), 20, 20)],
+    object(vec(1000, 400), vec(0, -0.2), 20, 20),
+    object(vec(300, 500), vec(0,0), 20, 20)],
     0.0
 )
 setframe.display()
