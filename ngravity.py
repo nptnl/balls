@@ -1,7 +1,7 @@
 import pygame
 EULER_STEP = 1
 BIG_G = 6.674e0
-DENSITY = 5e1
+PUSH_CONSTANT = 5e-1
 π = 3.1415926535
 FPS = 60
 STEPS_FRAME = 4
@@ -56,26 +56,26 @@ class object:
         self.r = radius
     def __repr__(self):
         return f"[position = {self.pos}]"
+    def check_border(self):
+        if self.pos.x + self.r >= maxX or self.pos.x - self.r <= minX:
+            self.vel.x = -self.vel.x
+        if self.pos.y + self.r >= maxY or self.pos.y - self.r <= minY:
+            self.vel.y = -self.vel.y
     def gravity_affect(self, other):
         dist = other.pos - self.pos
         force_mag = BIG_G * self.mass * other.mass / dist.mag_square()
         inv_dist_mag = 1 / dist.mag()
         return vec(force_mag * dist.x * inv_dist_mag,
         force_mag * dist.y * inv_dist_mag)
-    def check_border(self):
-        if self.pos.x + self.r >= maxX or self.pos.x - self.r <= minX:
-            self.vel.x = -self.vel.x
-        if self.pos.y + self.r >= maxY or self.pos.y - self.r <= minY:
-            self.vel.y = -self.vel.y
     def collision_affect(self, other):
         dist = self.pos - other.pos
         if dist.mag_square() > (self.r+other.r) * (self.r+other.r):
             return vec(0.0, 0.0)
-        inv_mag = 1 / dist.mag()
-        return vec(
-            DENSITY * other.mass * dist.x * (inv_mag ** 2),
-            DENSITY * other.mass * dist.y * (inv_mag ** 2)
-        )
+        dmag = dist.mag()
+        divot = self.r + other.r - dmag
+        rhomb = sqrt((self.r + 0.25*divot) * divot)
+        multiplier = PUSH_CONSTANT * divot * rhomb / dmag
+        return vec(dist.x * multiplier, dist.y * multiplier)
     
 class frame:
     def __init__(self, objects_list, time):
@@ -118,8 +118,8 @@ class frame:
         return frame(new_obj, self.time + EULER_STEP)
 
 setframe = frame(
-    [object(vec(300, 200), vec(0.1, 0), 50.0, 20),
-    object(vec(300, 500), vec(-0.1,0.4), 50.0, 20)],
+    [object(vec(300, 200), vec(0.1, 0), 20, 20),
+    object(vec(300, 500), vec(-0.1,0.4), 20, 20)],
     0.0
 )
 setframe.display()
