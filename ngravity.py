@@ -1,10 +1,10 @@
 import pygame
-EULER_STEP = 0.5
+EULER_STEP = 1e-2
 BIG_G = 6.674e0
-PUSH_CONSTANT = 5e-1
+PUSH_CONSTANT = 5e1
 π = 3.1415926535
 FPS = 60
-STEPS_FRAME = 8
+STEPS_FRAME = 400
 
 minX = 0
 maxX = 1200
@@ -56,6 +56,8 @@ class object:
         self.r = radius
     def __repr__(self):
         return f"[position = {self.pos}]"
+    def dense(self):
+        return self.mass / (π*self.r*self.r)
     def check_border(self):
         if self.pos.x + self.r >= maxX or self.pos.x - self.r <= minX:
             self.vel.x = -self.vel.x
@@ -67,15 +69,25 @@ class object:
         inv_dist_mag = 1 / dist.mag()
         return vec(force_mag * dist.x * inv_dist_mag,
         force_mag * dist.y * inv_dist_mag)
-    def collision_affect(self, other):
+    def collision_affect2(self, other):
         dist = self.pos - other.pos
         if dist.mag_square() > (self.r+other.r) * (self.r+other.r):
             return vec(0.0, 0.0)
         dmag = dist.mag()
         divot = self.r + other.r - dmag
         rhomb = sqrt((self.r + 0.25*divot) * divot)
-        multiplier = PUSH_CONSTANT * divot * rhomb / dmag
+        multiplier = PUSH_CONSTANT * (self.dense() + other.dense()) * divot * rhomb / dmag
         return vec(dist.x * multiplier, dist.y * multiplier)
+    def collision_affect(self, other):
+        delta = (self.pos - other.pos)
+        if delta.mag_square() > (self.r+other.r) * (self.r+other.r):
+            return vec(0.0, 0.0)
+        dmag = delta.mag()
+        divot = self.r + other.r - dmag
+        density = PUSH_CONSTANT * (self.mass/(π*self.r*self.r) + other.mass/(π*other.r*other.r))
+        halfchord = self.r*self.r - (dmag*dmag + self.r*self.r - other.r*other.r)**2 / (4*dmag*dmag)
+        multiplier = divot * halfchord * density / dmag
+        return vec(delta.x * multiplier, delta.y * multiplier)
     
 class frame:
     def __init__(self, objects_list, time):
@@ -97,6 +109,22 @@ class frame:
             pygame.display.update()
             for iteration in range(STEPS_FRAME):
                 self = self.advance()
+    def total_momentum(self):
+        total = vec(0.0, 0.0)
+        for entity in self.obj:
+            total += vec(entity.mass*entity.vel.x, entity.mass*entity.vel.y)
+        return total
+    def total_energy(self):
+        total = 0.0
+        for ent1 in self.obj:
+            for ent2 in self.obj:
+                if ent1.pos == ent2.pos:
+                    continue
+                dist = ent2.pos - ent1.pos
+                total -= 0.5 * ent1.mass * ent2.mass * BIG_G / dist.mag()
+            total += 0.5 * ent1.mass * ent1.vel.mag_square()
+        return total
+
     def advance(self):
         new_obj = []
         for ent1 in self.obj:
@@ -119,8 +147,8 @@ class frame:
 
 setframe = frame(
     [object(vec(300, 200), vec(0.1, 0), 20, 20),
-    object(vec(1000, 400), vec(0, -0.2), 20, 20),
-    object(vec(300, 500), vec(0,0), 20, 20)],
+    # object(vec(300, 500), vec(0,0), 20, 20),
+    object(vec(1000, 400), vec(-0.1, -0.2), 60, 30)],
     0.0
 )
 setframe.display()
