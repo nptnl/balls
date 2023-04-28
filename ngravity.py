@@ -3,8 +3,8 @@ EULER_STEP = 0.1
 BIG_G = 6.674e0
 PUSH_CONSTANT = 10
 π = 3.1415926535
-FPS = 60
-STEPS_FRAME = 20
+FPS = 120
+STEPS_FRAME = 10
 
 minX = 0
 maxX = 1200
@@ -58,18 +58,21 @@ class object:
         return f"[position = {self.pos}]"
     def dense(self):
         return self.mass / (π*self.r*self.r)
+
     def check_border(self):
         if self.pos.x + self.r >= maxX or self.pos.x - self.r <= minX:
             self.vel.x = -self.vel.x
         if self.pos.y + self.r >= maxY or self.pos.y - self.r <= minY:
             self.vel.y = -self.vel.y
-    def gravity_affect(self, other):
+
+    def gravity_effect(self, other):
         dist = other.pos - self.pos
         force_mag = BIG_G * self.mass * other.mass / dist.mag_square()
         inv_dist_mag = 1 / dist.mag()
         return vec(force_mag * dist.x * inv_dist_mag,
         force_mag * dist.y * inv_dist_mag)
-    def collision_affect(self, other):
+
+    def collision_effect(self, other):
         delta = (self.pos - other.pos)
         if delta.mag_square() > (self.r+other.r) * (self.r+other.r):
             return vec(0.0, 0.0)
@@ -84,10 +87,11 @@ class frame:
     def __init__(self, objects_list, time):
         self.obj = objects_list
         self.time = time
+
     def display(self):
         active = True
         clock = pygame.time.Clock()
-        window = pygame.display.set_mode((1200, 600))
+        window = pygame.display.set_mode((maxX, maxY))
         while active:
             clock.tick(FPS)
             for event in pygame.event.get():
@@ -100,11 +104,13 @@ class frame:
             pygame.display.update()
             for iteration in range(STEPS_FRAME):
                 self = self.advance()
+
     def total_momentum(self):
         total = vec(0.0, 0.0)
         for entity in self.obj:
             total += vec(entity.mass*entity.vel.x, entity.mass*entity.vel.y)
         return total
+
     def total_energy(self):
         total = 0.0
         for ent1 in self.obj:
@@ -123,8 +129,8 @@ class frame:
             for ent2 in self.obj:
                 if ent2.pos == ent1.pos:
                     continue
-                netforce += ent1.collision_affect(ent2)
-                netforce += ent1.gravity_affect(ent2)
+                netforce += ent1.collision_effect(ent2)
+                netforce += ent1.gravity_effect(ent2)
             vel = vec(
                 ent1.vel.x + netforce.x / ent1.mass * EULER_STEP,
                 ent1.vel.y + netforce.y / ent1.mass * EULER_STEP
@@ -144,4 +150,5 @@ setframe = frame(
     object(vec(900, 200), vec(0, -0.1), 20, 20)],
     0
 )
+
 setframe.display()

@@ -12,3 +12,4 @@ setframe = frame(
     object(vec(600, 600), vec(-1.5, 0), 0.2, 10),
     object(vec(900, 300), vec(0, 1.5), 0.2, 10)],
     0
+)
