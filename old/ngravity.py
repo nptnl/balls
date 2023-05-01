@@ -3,13 +3,16 @@ EULER_STEP = 0.1
 BIG_G = 6.674e0
 PUSH_CONSTANT = 10
 π = 3.1415926535
-FPS = 120
+FPS = 1200
 STEPS_FRAME = 10
 
 minX = 0
 maxX = 1200
 minY = 0
 maxY = 600
+mouse_X = 0
+mouse_Y = 0
+
 
 def sqrt(x):
     t1, t2 = 2.0, 1.0
@@ -93,6 +96,9 @@ class frame:
         clock = pygame.time.Clock()
         window = pygame.display.set_mode((maxX, maxY))
         while active:
+            mouse_X, Mouse_y = pygame.mouse.get_pos()
+            key = pygame.key.get_pressed()
+
             clock.tick(FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
