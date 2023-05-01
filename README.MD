@@ -1,20 +1,20 @@
-# Gravity Balls Simulator
+# 😺 Gravity Balls Simulator 🚀
 
-A Python-based gravity simulator powered by Pygame. This interactive simulation helps you visualize and understand how gravitational forces between objects interact in a two-dimensional environment.
+A Python-based gravity simulator powered by Pygame. This interactive simulation helps you visualize and understand how gravitational forces between objects interact 🌌 in a two-dimensional environment.
 
 ![Gravity Simulator](./assets/screenshot.png)
 
-## Features
+## 🌟 Features
 
-- Add and interact with multiple balls representing celestial objects.
-- Real-time physics simulation including gravity and collision effects.
-- Adjustable simulation speed.
-- Resizable window with dynamic boundary updates.
-- User-friendly control panel to manage simulation features.
-- Pastel-colored balls for a visually pleasing experience.
-- Excellent performance with smooth animations and updates.
+- Add and interact with multiple balls representing celestial objects 🪐.
+- Real-time physics simulation including gravity and collision effects ⚡.
+- Adjustable simulation speed ⏩.
+- Resizable window with dynamic boundary updates 🖥️.
+- User-friendly control panel to manage simulation features 🎮.
+- Pastel-colored balls for a visually pleasing experience ✨.
+- Excellent performance with smooth animations and updates 🚀.
 
-## Installation and Usage
+## 📦 Installation and Usage
 
 To install the necessary dependencies for this project, simply run:
 
@@ -28,7 +28,7 @@ Once you have installed the required package and have a release of python that s
 python3 main.py
 ```
 
-When the simulation window opens, you can interact with the balls using your mouse. You can also use the top menu bar to perform various actions:
+When the simulation window opens, you can interact with the balls using your mouse 🖱️. You can also use the top menu bar to perform various actions:
 
 - **Add Ball:** Click this button to add a new ball to the simulation. The new ball will be placed at an available location.
 - **Change Bound:** Toggles boundary visibility and updates boundary constraints when the window is resized.
