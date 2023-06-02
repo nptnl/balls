@@ -1,10 +1,10 @@
 import pygame
 EULER_STEP = 0.1
 BIG_G = 6.674e0
-PUSH_CONSTANT = 10
+PUSH_CONSTANT = 1e1
 π = 3.1415926535
-FPS = 60
-STEPS_FRAME = 20
+FPS = 120
+STEPS_FRAME = 10
 
 minX = 0
 maxX = 1200
@@ -31,7 +31,6 @@ def sin(x):
         total += running
         running *= -x*x / (2*term) / (2*term+1)
     return total
-
 class vec:
     def __init__(self, x, y):
         self.x = x
@@ -48,7 +47,8 @@ class vec:
         return self.x*self.x + self.y*self.y
     def mag(self):
         return sqrt(self.x*self.x + self.y*self.y)
-class object:
+
+class ball:
     def __init__(self, pos, vel, mass, radius):
         self.pos = pos
         self.vel = vel
@@ -78,11 +78,10 @@ class object:
         density = PUSH_CONSTANT * (self.mass/(π*self.r*self.r) + other.mass/(π*other.r*other.r))
         halfchord = sqrt ( self.r*self.r - (dmag*dmag + self.r*self.r - other.r*other.r)**2 / (4*dmag*dmag) )
         multiplier = divot * halfchord * density / dmag
-        return vec(delta.x * multiplier, delta.y * multiplier)
-    
+        return vec(delta.x * multiplier, delta.y * multiplier)   
 class frame:
-    def __init__(self, objects_list, time):
-        self.obj = objects_list
+    def __init__(self, balls_list, time):
+        self.obj = balls_list
         self.time = time
     def display(self):
         active = True
@@ -133,15 +132,15 @@ class frame:
                 ent1.pos.x + vel.x * EULER_STEP,
                 ent1.pos.y + vel.y * EULER_STEP
             )
-            new_obj.append(object(pos, vel, ent1.mass, ent1.r))
+            new_obj.append(ball(pos, vel, ent1.mass, ent1.r))
         return frame(new_obj, self.time + EULER_STEP)
 
 setframe = frame(
-    [object(vec(100, 100), vec(0.2, 0), 20, 20),
-    object(vec(500, 400), vec(-0.2, 0), 20, 20),
-    object(vec(200, 500), vec(0.3, 0), 20, 20),
-    object(vec(1100, 200), vec(0, 0.1), 20, 20),
-    object(vec(900, 200), vec(0, -0.1), 20, 20)],
+    [ball(vec(100, 100), vec(0.2, 0), 20, 20),
+    ball(vec(500, 400), vec(-0.2, 0), 20, 20),
+    ball(vec(200, 500), vec(0.3, 0), 20, 20),
+    ball(vec(1100, 200), vec(0, 0.1), 20, 20),
+    ball(vec(900, 200), vec(0, -0.1), 20, 20)],
     0
 )
 setframe.display()
